@@ -14,6 +14,7 @@ async def help(message: types.Message):
     await message.reply("1. /quiz command will start quiz series of problems\n"
                         "2./BrainNext command tap our amazing world!\n"
                         "3./cat command you must see it\n"
+                        "4./help1 more info!"
                         "Or just press button"
                         "Whenever you press Следующая Викторина will appear next quiz\n"
                         "Note: Bot-Admin will delete cursed words, so that's why be careful")
