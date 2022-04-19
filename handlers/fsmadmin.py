@@ -2,8 +2,11 @@ from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+
 from keyboards import admin_kb
 from config import bot
+from database import bot_db
 
 
 class FSMADMIN(StatesGroup):
@@ -58,10 +61,54 @@ async def load_description(message: types.Message,
                            state: FSMContext):
     async with state.proxy() as data:
         data['description'] = message.text
-    async with state.proxy() as data:
-        await message.reply(str(data))
+    # async with state.proxy() as data:
+    #     await message.reply(str(data))
+    await bot_db.sql_insert(state)
     await state.finish()
 
+
+async def complete_delete(call: types.CallbackQuery):
+    await bot_db.sql_delete(call.data.replace("delete ", ""))
+    await call.answer(text=f'{call.data.replace("delete ", "")} deleted',
+                      show_alert=True)
+
+async def complete_user_delete(call: types.CallbackQuery):
+    await bot_db.sql_delete(call.data.replace("delete ", ""))
+    await call.answer(text=f'{call.data.replace("delete ", "")} deleted',
+                      show_alert=True)
+
+async def delete_data(message: types.Message):
+    selected_data = await bot_db.sql_casual_select()
+    for result in selected_data:
+        await bot.send_photo(
+            chat_id=message.chat.id,
+            photo=result[0],
+            caption=f'Title: {result[1]}\n Description: {result[2]}',
+            reply_markup=InlineKeyboardMarkup().add(
+                InlineKeyboardButton(
+                    f'delete: {result[1]}',
+                    callback_data=f'delete {result[1]}'
+                )
+            )
+        )
+
+async def delete_user(message: types.Message):
+    selected_data = await bot_db.user_casual_select()
+    for show in selected_data:
+        await bot.send_photo(
+            chat_id=message.chat.id,
+            photo=show[0],
+            caption=f'telegram_acount_id {show[1]}\n'
+                                     f'username: {show[2]}\n'
+                                     f'first_name {show[3]}\n'
+                                     f'last_name: {show[4]}',
+            reply_markup=InlineKeyboardMarkup().add(
+                InlineKeyboardButton(
+                    f'delete: {show[2]}',
+                    callback_data=f'delete {show[2]}'
+                )
+            )
+        )
 
 def register_handler_admin(dp: Dispatcher):
     dp.register_message_handler(is_admin_command, commands=['admin'])
@@ -72,3 +119,11 @@ def register_handler_admin(dp: Dispatcher):
                                 content_types=['photo'], state=FSMADMIN.photo)
     dp.register_message_handler(load_title, state=FSMADMIN.title)
     dp.register_message_handler(load_description, state=FSMADMIN.description)
+    dp.register_callback_query_handler(
+        complete_delete,
+        lambda call: call.data and call.data.startswith("delete "))
+    dp.register_message_handler(delete_data, commands=['delete'])
+    dp.register_callback_query_handler(
+        complete_user_delete,
+        lambda call: call.data and call.data.startswith("zxc"))
+    dp.register_message_handler(delete_user, commands=['zxc'])

@@ -2,6 +2,7 @@ from aiogram import types, Dispatcher
 from aiogram.types import ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
 from keyboards import client_kb
 from config import bot
+from database import bot_db
 
 
 async def hello(message: types.Message):
@@ -64,6 +65,13 @@ async def brain_quiz_1(message: types.Message):
                            reply_markup=markup)
 
 
+async def get_all_tvshow(message: types.Message):
+    await bot_db.sql_select(message)
+
+async def get_all_users(message: types.Message):
+    await bot_db.user_select(message)
+
+
 def register_handlers_client(dp: Dispatcher):
     dp.register_message_handler(hello, commands=['start'])
     dp.register_message_handler(help, commands=['help'])
@@ -71,3 +79,5 @@ def register_handlers_client(dp: Dispatcher):
     dp.register_message_handler(brainup, commands=['BrainUp'])
     dp.register_message_handler(brain_quiz_1, commands=['BrainNext'])
     dp.register_message_handler(cat, commands=['cat'])
+    dp.register_message_handler(get_all_tvshow, commands=['twshow'])
+    dp.register_message_handler(get_all_users, commands=['getusers'])
