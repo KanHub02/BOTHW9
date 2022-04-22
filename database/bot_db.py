@@ -20,7 +20,20 @@ def sql_create():
         (photo TEXT, telegram_acount_id TEXT,username PRIMARY KEY, first_name TEXT,last_name TEXT)
         """
     )
+    connection.execute(
+        """
+        CREATE TABLE IF NOT EXISTS media 
+        (photo TEXT, file_name  PRIMERY KEY )
+        """
+    )
     connection.commit()
+
+
+async def media_insert(state):
+    async with state.proxy() as data:
+        cursor.execute("""
+        INSERT INTO media VALUES(?,?)
+        """)
 
 
 async def sql_insert(state):
@@ -30,12 +43,21 @@ async def sql_insert(state):
         """, tuple(data.values()))
         connection.commit()
 
+
 async def user_insert(state):
     async with state.proxy() as data:
         cursor.execute("""
         INSERT INTO my_users VALUES (?, ?, ? ,? ,?)
         """, tuple(data.values()))
         connection.commit()
+
+
+async def media_select(message):
+    for result in cursor.execute("""SELECT * FROM media""").fetchall():
+        await bot.send_photo(message.chat.id,
+                             result[0],
+                             caption=f'File name: {result[1]}')
+
 
 async def sql_select(message):
     for result in cursor.execute("""SELECT * FROM tvshow""").fetchall():
@@ -55,11 +77,23 @@ async def user_select(message):
                                      f'last_name: {show[4]}')
 
 
+async def media_casual_select():
+    return cursor.execute("""SELECT * FROM media""").fetchall()
+
+
 async def sql_casual_select():
     return cursor.execute("""SELECT * FROM tvshow""").fetchall()
 
+
 async def user_casual_select():
     return cursor.execute("""SELECT * FROM my_users""").fetchall()
+
+
+async def media_delete(data):
+    cursor.execute("""
+    DELETE FROM media WHERE file_name ==?
+    """, (data,))
+    connection.commit()
 
 
 async def sql_delete(data):
@@ -67,6 +101,7 @@ async def sql_delete(data):
     DELETE FROM tvshow WHERE title == ?
     """, (data,))
     connection.commit()
+
 
 async def user_delete(data):
     cursor.execute("""
