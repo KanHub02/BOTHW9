@@ -22,7 +22,7 @@ async def go_to_met_friends():
 
 
 async def scheduler():
-    aioschedule.every().friday.at("15:19").do(go_to_met_friends)
+    aioschedule.every().friday.at("00:01").do(go_to_met_friends)
 
     while True:
         await aioschedule.run_pending()
