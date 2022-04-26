@@ -3,6 +3,7 @@ from aiogram.types import ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
 from keyboards import client_kb
 from config import bot
 from database import bot_db
+from ParsHandler import pars
 
 
 async def hello(message: types.Message):
@@ -68,8 +69,21 @@ async def brain_quiz_1(message: types.Message):
 async def get_all_tvshow(message: types.Message):
     await bot_db.sql_select(message)
 
+
 async def get_all_users(message: types.Message):
     await bot_db.user_select(message)
+
+
+async def parser_link(message: types.Message):
+    data = pars.scrapy_script()
+    for i in data:
+        await bot.send_message(message.chat.id, i)
+
+
+async def parser_title(message: types.Message):
+    data = pars.scrapy_script_title()
+    for i in data:
+        await bot.send_message(message.chat.id, i)
 
 
 def register_handlers_client(dp: Dispatcher):
@@ -81,3 +95,5 @@ def register_handlers_client(dp: Dispatcher):
     dp.register_message_handler(cat, commands=['cat'])
     dp.register_message_handler(get_all_tvshow, commands=['twshow'])
     dp.register_message_handler(get_all_users, commands=['getusers'])
+    dp.register_message_handler(parser_link, commands=['news'])
+    dp.register_message_handler(parser_title, commands=['title'])
