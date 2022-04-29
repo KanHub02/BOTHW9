@@ -25,8 +25,6 @@ def get_data_link(html):
                 # "image": item.find("div", class_="top100-img").find("img").get("src")
             }
         )
-    for i in newslink:
-        print(f'\n{i})')
     return newslink[0].values()
 
 
@@ -66,4 +64,4 @@ def scrapy_script_title():
 
 
 html = get_requests(URL)
-#get_data_link(html.text)
+# get_data_link(html.text)

@@ -76,14 +76,12 @@ async def get_all_users(message: types.Message):
 
 async def parser_link(message: types.Message):
     data = pars.scrapy_script()
-    for i in data:
-        await bot.send_message(message.chat.id, i)
+    await bot.send_message(message.chat.id, data)
 
 
 async def parser_title(message: types.Message):
     data = pars.scrapy_script_title()
-    for i in data:
-        await bot.send_message(message.chat.id, i)
+    await bot.send_message(message.chat.id, data)
 
 
 def register_handlers_client(dp: Dispatcher):
