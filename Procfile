@@ -1,1 +1,1 @@
-web: python main.pgoty
+web: python main.py
