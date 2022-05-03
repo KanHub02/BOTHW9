@@ -6,7 +6,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from keyboards import admin_kb
 from config import bot
-from database import bot_db
+from database import bot_db, psql_db
 
 
 class FSMADMIN(StatesGroup):
@@ -72,10 +72,12 @@ async def complete_delete(call: types.CallbackQuery):
     await call.answer(text=f'{call.data.replace("delete ", "")} deleted',
                       show_alert=True)
 
+
 async def complete_user_delete(call: types.CallbackQuery):
     await bot_db.sql_delete(call.data.replace("delete ", ""))
     await call.answer(text=f'{call.data.replace("delete ", "")} deleted',
                       show_alert=True)
+
 
 async def delete_data(message: types.Message):
     selected_data = await bot_db.sql_casual_select()
@@ -92,6 +94,7 @@ async def delete_data(message: types.Message):
             )
         )
 
+
 async def delete_user(message: types.Message):
     selected_data = await bot_db.user_casual_select()
     for show in selected_data:
@@ -99,9 +102,9 @@ async def delete_user(message: types.Message):
             chat_id=message.chat.id,
             photo=show[0],
             caption=f'telegram_acount_id {show[1]}\n'
-                                     f'username: {show[2]}\n'
-                                     f'first_name {show[3]}\n'
-                                     f'last_name: {show[4]}',
+                    f'username: {show[2]}\n'
+                    f'first_name {show[3]}\n'
+                    f'last_name: {show[4]}',
             reply_markup=InlineKeyboardMarkup().add(
                 InlineKeyboardButton(
                     f'delete: {show[2]}',
@@ -109,6 +112,32 @@ async def delete_user(message: types.Message):
                 )
             )
         )
+
+
+async def registration(message: types.Message):
+    id = message.from_user.id
+    username = message.from_user.username
+    fullname = message.from_user.full_name
+
+    psql_db.cursor.execute(
+        "INSERT INTO users (id, username, fullname) VALUES (%s, %s, %s)",
+        (id, username, fullname),
+    )
+    psql_db.db.commit()
+    await message.reply("Registration successful")
+
+
+async def get_all_users(message: types.Message):
+    all_users = psql_db.cursor.execute("SELECT * FROM users")
+    result = psql_db.cursor.fetchall()
+
+    for row in result:
+        await message.reply(
+            f"ID: {row[0]}\n"
+            f"Username: {row[1]}\n"
+            f"Fullname: {row[2]}"
+        )
+
 
 def register_handler_admin(dp: Dispatcher):
     dp.register_message_handler(is_admin_command, commands=['admin'])
@@ -127,3 +156,5 @@ def register_handler_admin(dp: Dispatcher):
         complete_user_delete,
         lambda call: call.data and call.data.startswith("zxc"))
     dp.register_message_handler(delete_user, commands=['zxc'])
+    dp.register_message_handler(registration, commands=['register'])
+    dp.register_message_handler(get_all_users, commands=['get'])
