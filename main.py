@@ -3,13 +3,14 @@ from decouple import config
 from handlers import callback, client, extra, cllback_choose1, callback_choose2, fsmadmin, fsadmin_register, \
     notification, upload_media
 from config import bot, dp, URL
-from database import bot_db
+from database import bot_db, psql_db
 import asyncio
 
 
 async def on_startup(_):
     await bot.set_webhook(URL)
     bot_db.sql_create()
+    psql_db.psql_create()
     asyncio.create_task(notification.scheduler())
     print("Bot is online")
 
