@@ -114,8 +114,8 @@ async def delete_user(message: types.Message):
         )
 async def add_bike(message: types.Message):
     photo = FSMADMIN.photo.set()
-    desc = message.from_user
     await message.reply("Admin, Send me photo please")
+    desc = message.from_user
     await message.reply("Admin, Send me description ")
     psql_db.cursor.execute(
         "INSERT INTO users (photo, decription) VALUES (%s, %s)",
