@@ -112,19 +112,19 @@ async def delete_user(message: types.Message):
                 )
             )
         )
-async def add_bike(message: types.Message):
-    photo = FSMADMIN.photo.set()
-    await bot.send_message("Admin, Send me photo please")
-    desc = message.from_user
-    bot.send_message("Admin, Send me description ")
-    psql_db.cursor.execute(
-        "INSERT INTO users (photo, decription) VALUES (%s, %s)",
-        (photo, desc),
-    )
-    psql_db.db.commit()
-    await message.reply("Registration successful")
-
-
+# async def add_bike(message: types.Message):
+#     photo = FSMADMIN.photo.set()
+#     await bot.send_message("Admin, Send me photo please")
+#     desc = message.from_user
+#     bot.send_message("Admin, Send me description ")
+#     psql_db.cursor.execute(
+#         "INSERT INTO users (photo, decription) VALUES (%s, %s)",
+#         (photo, desc),
+#     )
+#     psql_db.db.commit()
+#     await message.reply("Registration successful")
+#
+#
 
 async def registration(message: types.Message):
     id = message.from_user.id
@@ -137,15 +137,15 @@ async def registration(message: types.Message):
     )
     psql_db.db.commit()
     await message.reply("Registration successful")
-async def get_all_bikes(message: types.Message):
-    all_bikes = psql_db.cursor.execute("SELECT * FROM bikes")
-    result = psql_db.cursor.fetchall()
-
-    for row in result:
-        await message.reply(
-            f"Photo: {row[0]}\n"
-            f"Description: {row[1]}\n"
-        )
+# async def get_all_bikes(message: types.Message):
+#     all_bikes = psql_db.cursor.execute("SELECT * FROM bikes")
+#     result = psql_db.cursor.fetchall()
+#
+#     for row in result:
+#         await message.reply(
+#             f"Photo: {row[0]}\n"
+#             f"Description: {row[1]}\n"
+#         )
 
 async def get_all_users(message: types.Message):
     all_users = psql_db.cursor.execute("SELECT * FROM users")
@@ -178,5 +178,5 @@ def register_handler_admin(dp: Dispatcher):
     dp.register_message_handler(delete_user, commands=['zxc'])
     dp.register_message_handler(registration, commands=['register'])
     dp.register_message_handler(get_all_users, commands=['get'])
-    dp.register_message_handler(add_bike, commands=['addbike'])
-    dp.register_message_handler(get_all_bikes, commands=['bikes'])
+    # dp.register_message_handler(add_bike, commands=['addbike'])
+    # dp.register_message_handler(get_all_bikes, commands=['bikes'])
