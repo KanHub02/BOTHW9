@@ -12,3 +12,13 @@ def psql_create():
         cursor.execute("rollback")
         cursor.execute("CREATE TABLE IF NOT EXISTS users (id TEXT, username TEXT, fullname TEXT);")
         db.commit()
+
+def psql_create_bikes():
+    try:
+        cursor.execute("CREATE TABLE IF NOT EXISTS bikes(tip TEXT, description TEXT);")
+        db.commit()
+    except:
+        cursor.execute("rollback")
+        cursor.execute("CREATE TABLE IF NOT EXISTS bikes(tip TEXT, description TEXT);")
+        db.commit()
+
